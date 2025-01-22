@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 
@@ -20,25 +21,29 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/dashboard/*"
-              element={
-                <PrivateRoute>
-                  <DashboardLayout>
-                    <Routes>
-                      <Route index element={<Dashboard />} />
-                      {/* Add other dashboard routes here */}
-                    </Routes>
-                  </DashboardLayout>
-                </PrivateRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
+          <SidebarProvider>
+            <div className="min-h-screen flex w-full">
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    <PrivateRoute>
+                      <DashboardLayout>
+                        <Routes>
+                          <Route index element={<Dashboard />} />
+                          {/* Add other dashboard routes here */}
+                        </Routes>
+                      </DashboardLayout>
+                    </PrivateRoute>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            </div>
+          </SidebarProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
