@@ -8,6 +8,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Movies from "./pages/Movies";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
                       <DashboardLayout>
                         <Routes>
                           <Route index element={<Dashboard />} />
+                          <Route path="movies" element={<Movies />} />
                           {/* Add other dashboard routes here */}
                         </Routes>
                       </DashboardLayout>
