@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import { theaterService } from "@/services/theaterService";
 
 const theaterSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -23,13 +24,14 @@ type TheaterFormValues = z.infer<typeof theaterSchema>;
 
 interface TheaterFormProps {
   onSuccess: () => void;
+  initialData?: TheaterFormValues;
 }
 
-export function TheaterForm({ onSuccess }: TheaterFormProps) {
+export function TheaterForm({ onSuccess, initialData }: TheaterFormProps) {
   const { toast } = useToast();
   const form = useForm<TheaterFormValues>({
     resolver: zodResolver(theaterSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       name: "",
       location: "",
       totalSeats: "",
@@ -38,30 +40,30 @@ export function TheaterForm({ onSuccess }: TheaterFormProps) {
 
   const onSubmit = async (data: TheaterFormValues) => {
     try {
-      const response = await fetch("/api/theaters", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      if (initialData) {
+        await theaterService.updateTheater(initialData.id, {
           ...data,
           totalSeats: parseInt(data.totalSeats),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create theater");
+        });
+        toast({
+          title: "Success",
+          description: "Theater updated successfully",
+        });
+      } else {
+        await theaterService.createTheater({
+          ...data,
+          totalSeats: parseInt(data.totalSeats),
+        });
+        toast({
+          title: "Success",
+          description: "Theater created successfully",
+        });
       }
-
-      toast({
-        title: "Success",
-        description: "Theater created successfully",
-      });
       onSuccess();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create theater",
+        description: initialData ? "Failed to update theater" : "Failed to create theater",
         variant: "destructive",
       });
     }

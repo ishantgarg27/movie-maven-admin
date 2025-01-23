@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import { movieService } from "@/services/movieService";
 
 const movieSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -30,13 +31,14 @@ type MovieFormValues = z.infer<typeof movieSchema>;
 
 interface MovieFormProps {
   onSuccess: () => void;
+  initialData?: MovieFormValues;
 }
 
-export function MovieForm({ onSuccess }: MovieFormProps) {
+export function MovieForm({ onSuccess, initialData }: MovieFormProps) {
   const { toast } = useToast();
   const form = useForm<MovieFormValues>({
     resolver: zodResolver(movieSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "",
       imageUrl: "",
       duration: "",
@@ -51,31 +53,24 @@ export function MovieForm({ onSuccess }: MovieFormProps) {
 
   const onSubmit = async (data: MovieFormValues) => {
     try {
-      const response = await fetch("/api/movies", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          languages: data.languages.split(",").map((lang) => lang.trim()),
-          genres: data.genres.split(",").map((genre) => genre.trim()),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create movie");
+      if (initialData) {
+        await movieService.updateMovie(initialData.id, data);
+        toast({
+          title: "Success",
+          description: "Movie updated successfully",
+        });
+      } else {
+        await movieService.createMovie(data);
+        toast({
+          title: "Success",
+          description: "Movie created successfully",
+        });
       }
-
-      toast({
-        title: "Success",
-        description: "Movie created successfully",
-      });
       onSuccess();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create movie",
+        description: initialData ? "Failed to update movie" : "Failed to create movie",
         variant: "destructive",
       });
     }

@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { TheaterForm } from "@/components/TheaterForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TheaterList } from "@/components/TheaterList";
 
 const Theaters = () => {
   const [isAddTheaterOpen, setIsAddTheaterOpen] = useState(false);
@@ -17,12 +19,16 @@ const Theaters = () => {
         </Button>
       </div>
 
+      <TheaterList />
+
       <Dialog open={isAddTheaterOpen} onOpenChange={setIsAddTheaterOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Add New Theater</DialogTitle>
           </DialogHeader>
-          <TheaterForm onSuccess={() => setIsAddTheaterOpen(false)} />
+          <ScrollArea className="h-[calc(90vh-8rem)] pr-4">
+            <TheaterForm onSuccess={() => setIsAddTheaterOpen(false)} />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>

@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MovieForm } from "@/components/MovieForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { MovieList } from "@/components/MovieList";
 
 const Movies = () => {
   const [isAddMovieOpen, setIsAddMovieOpen] = useState(false);
@@ -17,6 +18,8 @@ const Movies = () => {
           Add Movie
         </Button>
       </div>
+
+      <MovieList />
 
       <Dialog open={isAddMovieOpen} onOpenChange={setIsAddMovieOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh]">
