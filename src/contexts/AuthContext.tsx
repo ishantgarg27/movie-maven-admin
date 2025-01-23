@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import { authService, LoginData, SignupData, ProfileData } from '@/services/authService';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (data: LoginData) => Promise<void>;
+  logout: () => Promise<void>;
+  signup: (data: SignupData) => Promise<void>;
+  updateProfile: (data: ProfileData) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,17 +25,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // For demo purposes, we'll use a simple check
-    if (email === 'admin@example.com' && password === 'admin123') {
-      localStorage.setItem('adminToken', 'demo-token');
+  const login = async (data: LoginData) => {
+    try {
+      const response = await authService.login(data);
+      localStorage.setItem('adminToken', response.token);
       setIsAuthenticated(true);
       toast({
         title: "Success",
-        description: "Welcome back, Admin!",
+        description: "Welcome back!",
       });
       navigate('/dashboard');
-    } else {
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -41,18 +44,62 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('adminToken');
-    setIsAuthenticated(false);
-    toast({
-      title: "Logged out",
-      description: "You have been logged out successfully",
-    });
-    navigate('/login');
+  const logout = async () => {
+    try {
+      await authService.logout();
+      localStorage.removeItem('adminToken');
+      setIsAuthenticated(false);
+      toast({
+        title: "Logged out",
+        description: "You have been logged out successfully",
+      });
+      navigate('/login');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to logout",
+      });
+    }
+  };
+
+  const signup = async (data: SignupData) => {
+    try {
+      const response = await authService.signup(data);
+      localStorage.setItem('adminToken', response.token);
+      setIsAuthenticated(true);
+      toast({
+        title: "Success",
+        description: "Account created successfully!",
+      });
+      navigate('/dashboard');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create account",
+      });
+    }
+  };
+
+  const updateProfile = async (data: ProfileData) => {
+    try {
+      await authService.updateProfile(data);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update profile",
+      });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, signup, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

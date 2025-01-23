@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MovieForm } from "@/components/MovieForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Movies = () => {
   const [isAddMovieOpen, setIsAddMovieOpen] = useState(false);
@@ -18,11 +19,13 @@ const Movies = () => {
       </div>
 
       <Dialog open={isAddMovieOpen} onOpenChange={setIsAddMovieOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Add New Movie</DialogTitle>
           </DialogHeader>
-          <MovieForm onSuccess={() => setIsAddMovieOpen(false)} />
+          <ScrollArea className="h-[calc(90vh-8rem)] pr-4">
+            <MovieForm onSuccess={() => setIsAddMovieOpen(false)} />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
