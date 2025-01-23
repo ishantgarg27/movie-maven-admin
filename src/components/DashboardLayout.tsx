@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   Sidebar,
   SidebarContent,
@@ -63,7 +64,10 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
       <Sidebar>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Menu</SidebarGroupLabel>
+            <div className="flex items-center justify-between px-4 py-2">
+              <SidebarGroupLabel>Menu</SidebarGroupLabel>
+              <ThemeToggle />
+            </div>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
